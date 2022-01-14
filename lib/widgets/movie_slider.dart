@@ -13,6 +13,16 @@ class MovieSlider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
+
+    if(movies.length == 0){
+       Container(
+        width: double.infinity,
+        height: 260,
+        child:Center(child: 
+         CircularProgressIndicator(),),
+      );
+    }
+
     return Container(
       width: double.infinity,
       height: 260,
@@ -53,6 +63,7 @@ class _MoviePoster extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Container(
       width: 130,
       height: 190,

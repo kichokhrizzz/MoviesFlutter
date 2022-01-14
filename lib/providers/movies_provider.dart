@@ -13,6 +13,8 @@ class MoviesProvider extends ChangeNotifier{
   List<Movie> onDisplayMovies = [];
   List<Movie> popularMovies = [];
 
+  int _popularPage = 0;
+
   MoviesProvider(){
 
     this.getOnDisplayMovies();
@@ -20,16 +22,24 @@ class MoviesProvider extends ChangeNotifier{
 
   }
 
-  getOnDisplayMovies() async {
+  Future<String> _getJsonData( String endpoint, [int page = 1] ) async {
 
-    var url = Uri.https(_baseUrl, '3/movie/now_playing', {
+     var url = Uri.https(_baseUrl, endpoint, {
       'api_key' : _apiKey,
       'language': _language,
-      'page' : '1'
+      'page' : '$page'
     });
 
     final response = await http.get(url);
-    final nowPlayingResponse = NowPlayingResponse.fromJson(response.body);
+
+    return response.body;
+
+  }
+
+  getOnDisplayMovies() async {
+
+    final jsonData = await this._getJsonData('3/movie/now_playing');
+    final nowPlayingResponse = NowPlayingResponse.fromJson(jsonData);
     
     onDisplayMovies = nowPlayingResponse.results;
 
@@ -38,14 +48,10 @@ class MoviesProvider extends ChangeNotifier{
 
   getPopularMovies() async {
 
-    var url = Uri.https(_baseUrl, '3/movie/popular', {
-      'api_key' : _apiKey,
-      'language': _language,
-      'page' : '1'
-    });
+    _popularPage++;
 
-    final response = await http.get(url);
-    final popularResponse = PopularResponse.fromJson(response.body);
+    final jsonData = await this._getJsonData('3/movie/popular', _popularPage);
+    final popularResponse = PopularResponse.fromJson(jsonData);
     
     popularMovies = [...popularMovies, ...popularResponse.results];
 
